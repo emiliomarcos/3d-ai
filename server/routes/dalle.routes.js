@@ -32,7 +32,19 @@ router.route('/').post(async (req, res) => {
     res.status(200).json({ photo: image });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      console.log("Error response:", error.response);
+      res.status(500).json({ message: "Error from DALL-E API", error: error.response.data });
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.log("Error request:", error.request);
+      res.status(500).json({ message: "No response from DALL-E API", error: error.message });
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+      res.status(500).json({ message: "Something went wrong", error: error.message });
+    }
   }
 })
 
